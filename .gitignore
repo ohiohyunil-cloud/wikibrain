@@ -15,3 +15,6 @@ site/vendor/
 share/
 site/api/
 .impeccable/questions/
+site/package.json
+site/package-lock.json
+site/tsconfig.json
