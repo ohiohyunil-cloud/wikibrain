@@ -176,6 +176,21 @@ def stop_chat_server():
         _chat = None
 
 
+# 작은 모델(1.5B)은 문서 여러 개를 섞고 날짜를 지어낸다: 근거 번호 인용, 문서별 분리, 없는 숫자 금지를 명시
+SYSTEM = ("너는 주어진 문서만 근거로 한국어로 답한다. 규칙:\n"
+          "1. 문장마다 근거 문서 번호를 [1]처럼 붙인다.\n"
+          "2. 서로 다른 문서의 사건·인물·날짜를 하나로 합치지 않는다. 사건이 여럿이면 항목을 나눠 쓴다.\n"
+          "3. 날짜·숫자·이름은 문서에 적힌 것만 쓴다. 영어 문서는 뜻만 옮기고 내용을 덧붙이지 않는다.\n"
+          "4. 문서에 답이 없으면 '주어진 문서에는 없다'고만 말한다.\n"
+          "5. 짧게, 핵심부터.")
+
+
+def numbered(ctx):
+    """'---'로 나뉜 문서와 빈 줄로 나뉜 사건 묶음에 [1], [2] 번호를 붙인다."""
+    parts = [p.strip() for p in re.split(r"\n\s*---\s*\n|\n\n(?=\[)", ctx) if p.strip()]
+    return "\n\n".join(f"[{k}] {p}" for k, p in enumerate(parts, 1))
+
+
 class ChatRequest(BaseModel):
     question: str = Field(min_length=1, max_length=2000)
     context: str = Field("", max_length=60000)
@@ -189,8 +204,8 @@ def chat(req: ChatRequest, x_bridge_token: Optional[str] = Header(None)):
         raise HTTPException(503, "학습 중 (8GB: 채팅 서버 정지)")
     start_chat_server(CURRENT_ADAPTER[0])
     body = json.dumps({"stream": True, "max_tokens": req.max_tokens, "messages": [
-        {"role": "system", "content": "주어진 문서에 근거해서 한국어로 답하라. 문서에 없으면 모른다고 하라."},
-        {"role": "user", "content": f"[문서]\n{req.context}\n\n[질문]\n{req.question}"}]}).encode()
+        {"role": "system", "content": SYSTEM},
+        {"role": "user", "content": f"[문서]\n{numbered(req.context)}\n\n[질문]\n{req.question}"}]}).encode()
     r = urllib.request.urlopen(urllib.request.Request(f"http://127.0.0.1:{CHAT_PORT}/v1/chat/completions", body,
                                                       {"Content-Type": "application/json"}), timeout=300)
     return StreamingResponse(iter(lambda: r.readline(), b""), media_type="text/event-stream")
