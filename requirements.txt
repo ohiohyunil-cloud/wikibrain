@@ -4,7 +4,7 @@ numpy==1.26.4
 pynndescent==0.7.0
 safetensors==0.7.0
 scikit-learn==1.6.1
-sentence-transformers==5.1.2
+sentence-transformers==5.6.0
 torch==2.8.0
 transformers==4.57.6
 umap-learn==0.5.12
