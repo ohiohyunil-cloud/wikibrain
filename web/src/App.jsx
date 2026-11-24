@@ -17,6 +17,8 @@ import {createScene, SRC_RGB, SRC_KO} from './scene.js';
 import {createGlobe, EVENT_RGB} from './globe.js';
 
 const fmt = n => n.toLocaleString('ko-KR');
+// 외부 데이터(뉴스·GDELT) 링크는 https만 연다 (javascript: 등 차단)
+const openLink = u => {try {if (new URL(u).protocol === 'https:') window.open(u, '_blank', 'noopener,noreferrer');} catch { /* 잘못된 주소 */ }};
 const KIND_KO = {news: '뉴스', paper: '논문', disclosure: '공시 소식'};
 const EVENT_KO = {economy: '경제', politics: '정치·외교', conflict: '분쟁·사고'};
 const rgb = c => `rgb(${c.map(v => Math.round(Math.min(1, v) * 255)).join(',')})`;
@@ -308,7 +310,7 @@ function SatBody({sat, onPick, onAsk, onTrain}) {
     <Stack gap={3}>
       <Stack direction="horizontal" gap={2} align="center" wrap="wrap">
         <Text type="supporting">{KIND_KO[sat.kind]} · {ago < 60 ? ago + '분' : Math.round(ago / 60) + '시간'} 전 수집</Text>
-        <Button label="원문" size="sm" variant="ghost" icon={<ExternalLink size={14} />} onClick={() => window.open(sat.link, '_blank', 'noopener,noreferrer')} />
+        <Button label="원문" size="sm" variant="ghost" icon={<ExternalLink size={14} />} onClick={() => openLink(sat.link)} />
       </Stack>
       {sat.summary && <Text as="p" display="block">{sat.summary}</Text>}
       <Text type="label" color="secondary">가장 가까운 위키 문서</Text>
@@ -438,7 +440,7 @@ function WorldUI({evlinks, bridgeUp, onDoc, events, wpanel, setWpanel, globe, re
               <Stack gap={2}>
                 <Stack direction="horizontal" gap={2} align="center" wrap="wrap">
                   <Text type="supporting">{EVENT_KO[wpanel.e.kind]} · {wpanel.e.place} · {ago(wpanel.e.born)} · 기사 {wpanel.e.articles}건 · 어조 {wpanel.e.tone}</Text>
-                  <Button label="원문" size="sm" variant="ghost" icon={<ExternalLink size={14} />} onClick={() => window.open(wpanel.e.link, '_blank', 'noopener,noreferrer')} />
+                  <Button label="원문" size="sm" variant="ghost" icon={<ExternalLink size={14} />} onClick={() => openLink(wpanel.e.link)} />
                 </Stack>
                 <Text type="label" color="secondary">가까운 위키 문서</Text>
                 {evlinks[wpanel.e.id]
@@ -447,7 +449,7 @@ function WorldUI({evlinks, bridgeUp, onDoc, events, wpanel, setWpanel, globe, re
                 <Text type="supporting" size="xsm">출처: GDELT 2.0 공개 파일 · 원문 제목 그대로</Text>
               </Stack>
             )}
-            {list && <Stack gap={2}>{list.slice(0, 30).map(e => <EventRow key={e.id} e={e} onPick={() => {globe?.flyTo(e.lat, e.lon); window.open(e.link, '_blank', 'noopener,noreferrer');}} />)}</Stack>}
+            {list && <Stack gap={2}>{list.slice(0, 30).map(e => <EventRow key={e.id} e={e} onPick={() => {globe?.flyTo(e.lat, e.lon); openLink(e.link);}} />)}</Stack>}
             <Stack direction="horizontal" gap={2} wrap="wrap">
               <Button label={list ? '이 지역에 질문하기' : '이 사건에 질문하기'} variant="primary" icon={<MessageSquareText size={16} />}
                 onClick={() => onAsk({kind: 'world', events: list || [wpanel.e]})} />

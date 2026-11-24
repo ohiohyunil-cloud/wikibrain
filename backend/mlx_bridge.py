@@ -6,6 +6,7 @@
   /api/augment 3관점 증강 → LoRA 학습 큐(1개). 8GB: 학습 중 채팅 서버 정지 후 어댑터로 재기동
   /api/status  학습 상태
 """
+import hmac
 import hashlib, json, os, re, sqlite3, subprocess, sys, threading, time, urllib.request
 from typing import List, Optional
 import numpy as np
@@ -103,7 +104,7 @@ def nearest(v, k=9):
 
 
 def check(token: Optional[str]):
-    if token != TOKEN:
+    if not hmac.compare_digest((token or "").encode(), TOKEN.encode()):  # 시간 차이로 토큰을 추측하지 못하게
         raise HTTPException(401)
 
 

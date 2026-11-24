@@ -22,6 +22,7 @@ def get(url):
 
 def rows(name):
     z = zipfile.ZipFile(io.BytesIO(get(BASE + name)))
+    assert z.infolist()[0].file_size < 400 * 2**20, "압축 해제 크기 초과"  # 압축 폭탄 방지
     return csv.reader(io.TextIOWrapper(z.open(z.namelist()[0]), "utf-8", errors="replace"), delimiter="\t")
 
 
