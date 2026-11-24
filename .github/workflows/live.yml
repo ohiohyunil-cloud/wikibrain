@@ -1,0 +1,24 @@
+# 세계 창 사건 자동 수집: 1시간마다 GDELT(15분 묶음 5개) 공개 파일(키 없음) → site/data/live/events.json 커밋.
+# 비밀값 없음. Vercel을 이 저장소에 연결해 두면 커밋마다 다시 배포된다.
+name: live-events
+on:
+  schedule: [{cron: "7 * * * *"}]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency: {group: live-events, cancel-in-progress: false}
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+      - run: python pipeline/7_live.py 5
+      - name: commit
+        run: |
+          git config user.name "live-events-bot"
+          git config user.email "live-events-bot@users.noreply.github.com"
+          git add site/data/live/events.json
+          git diff --cached --quiet || (git commit -m "live: 사건 갱신" && git push)

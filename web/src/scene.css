@@ -1,0 +1,11 @@
+/* 3D 캔버스·눈금 링·비네팅: 컴포넌트가 아닌 장면 레이어만 (UI는 전부 Astryx 컴포넌트) */
+html, body, #root { height: 100%; overflow: hidden; background: var(--color-background-body); }
+.sky { position: fixed; inset: 0; cursor: grab; }
+.sky:active { cursor: grabbing; }
+.ring { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; }
+.ring .ringline { fill: none; stroke: var(--color-border-emphasized); stroke-width: .7; }
+.ring .tick { stroke: var(--color-border); stroke-width: .6; }
+.ring .tick.major { stroke: var(--color-accent); stroke-width: 1; }
+.vignette { position: fixed; inset: 0; pointer-events: none; z-index: 1;
+  background: radial-gradient(ellipse at 50% 48%, transparent 52%, color-mix(in srgb, var(--color-background-body) 40%, transparent) 84%, var(--color-background-body) 100%); }
+.loading { background: var(--color-background-body); }

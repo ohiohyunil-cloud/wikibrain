@@ -1,0 +1,354 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-23T02:38:49+00:00",
+  "title": "Design System: WikiBrain",
+  "extensions": {
+    "colorMeta": {
+      "stone": {
+        "role": "neutral",
+        "displayName": "Stone",
+        "canonical": "oklch(16.8% 0.004 264)",
+        "tonalRamp": [
+          "#0B0B0C",
+          "#242527",
+          "#414244",
+          "#606164",
+          "#818285",
+          "#A4A5A7",
+          "#C8C9CB",
+          "#EDEEF0"
+        ]
+      },
+      "incise": {
+        "role": "neutral",
+        "displayName": "Incise",
+        "canonical": "oklch(91.9% 0.017 88)",
+        "tonalRamp": [
+          "#0D0B07",
+          "#27251F",
+          "#45423A",
+          "#656157",
+          "#868278",
+          "#A9A59B",
+          "#CCC9C1",
+          "#F1EEE7"
+        ]
+      },
+      "brass": {
+        "role": "primary",
+        "displayName": "Faded Brass",
+        "canonical": "oklch(72.2% 0.060 82)",
+        "tonalRamp": [
+          "#120900",
+          "#2F230B",
+          "#4F3F22",
+          "#715E3B",
+          "#937F5B",
+          "#B4A383",
+          "#D7C7AB",
+          "#FAEDD5"
+        ]
+      },
+      "slate": {
+        "role": "secondary",
+        "displayName": "Slate",
+        "canonical": "oklch(63.0% 0.021 241)",
+        "tonalRamp": [
+          "#070C10",
+          "#1F262C",
+          "#3A434B",
+          "#57636C",
+          "#78848D",
+          "#9CA7AF",
+          "#C1CBD2",
+          "#E8F0F6"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Rubbing Paper",
+        "canonical": "oklch(90.8% 0.020 88)",
+        "tonalRamp": [
+          "#0D0B06",
+          "#28251E",
+          "#464238",
+          "#666155",
+          "#878276",
+          "#A9A59A",
+          "#CDC9BF",
+          "#F2EEE6"
+        ]
+      },
+      "paper-2": {
+        "role": "neutral",
+        "displayName": "Paper Fold",
+        "canonical": "oklch(86.5% 0.024 88)",
+        "tonalRamp": [
+          "#0E0B05",
+          "#28251C",
+          "#464236",
+          "#676153",
+          "#888273",
+          "#AAA597",
+          "#CEC9BD",
+          "#F2EEE4"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "oklch(22.6% 0.007 258)",
+        "tonalRamp": [
+          "#0A0B0D",
+          "#242527",
+          "#404245",
+          "#5F6165",
+          "#808286",
+          "#A3A5A8",
+          "#C7C9CC",
+          "#EDEEF1"
+        ]
+      },
+      "ink-2": {
+        "role": "neutral",
+        "displayName": "Ink Wash",
+        "canonical": "oklch(42.5% 0.012 253)",
+        "tonalRamp": [
+          "#090B0E",
+          "#222529",
+          "#3E4247",
+          "#5D6268",
+          "#7E8389",
+          "#A1A5AB",
+          "#C5C9CE",
+          "#EBEFF3"
+        ]
+      },
+      "incise-dim": {
+        "role": "neutral",
+        "displayName": "Incise Dim",
+        "canonical": "rgba(233,228,216,.55)",
+        "tonalRamp": [
+          "#0D0B07",
+          "#27251F",
+          "#45423A",
+          "#656157",
+          "#868278",
+          "#A9A59B",
+          "#CCC9C1",
+          "#F1EEE7"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "세로쓰기 표제 전용."
+      },
+      "readout-figure": {
+        "displayName": "Readout Figure",
+        "purpose": "판독기 큰 숫자."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "정보 슬립 문서 제목."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "슬립 본문, 최대 62ch."
+      },
+      "body-base": {
+        "displayName": "Body Base",
+        "purpose": "문서 기본 글자."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "메타와 판독 설명, tabular-nums."
+      }
+    },
+    "shadows": [
+      {
+        "name": "slip-rest",
+        "value": "0 18px 40px -12px rgba(0,0,0,.7), 0 2px 6px rgba(0,0,0,.35)",
+        "purpose": "돌 위에 놓인 종이 슬립. 상태와 무관."
+      }
+    ],
+    "motion": [
+      {
+        "name": "sky-auto-rotate",
+        "value": "OrbitControls.autoRotateSpeed 0.12",
+        "purpose": "무조작 시 하늘의 느린 회전. 조작 시작 시 정지, reduced-motion이면 끔."
+      },
+      {
+        "name": "sky-damping",
+        "value": "dampingFactor 0.06",
+        "purpose": "회전 감속."
+      },
+      {
+        "name": "fly-to",
+        "value": "target lerp 0.08/frame",
+        "purpose": "선택한 별로 시점 이동."
+      },
+      {
+        "name": "ease-out-expo",
+        "value": "cubic-bezier(.16,1,.3,1) 0.9s",
+        "purpose": "로딩 막 사라짐."
+      },
+      {
+        "name": "hint-fade",
+        "value": "opacity 0.6s",
+        "purpose": "첫 조작 후 안내 숨김."
+      },
+      {
+        "name": "hover-dwell",
+        "value": "90ms",
+        "purpose": "포인터가 멈춘 뒤에만 툴팁 판정."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "compact",
+        "value": "720px"
+      }
+    ],
+    "pointShader": {
+      "blending": "additive",
+      "depthWrite": false,
+      "bloom": false,
+      "disc": "1 - smoothstep(0.32, 0.5, d)",
+      "luminance": "0.035 + 0.2*h^3 + 0.03*rand, h=min(1,log2(links+1)/11)",
+      "tint": [
+        0.91,
+        0.89,
+        0.85
+      ],
+      "size": "max((1.1 + 6.5*h) * 230*dpr / z, 1)",
+      "fog": "exp2, uFog 0.0009, color *= (1 - fog) -> sinks to stone",
+      "lod": "hide links<5 beyond z 350",
+      "links": "#E9E4D8 opacity 0.22",
+      "selection": "brass x1.5, size 34 (click) / 14 (lasso), no fog"
+    },
+    "lasso": {
+      "stroke": "#B8A27A",
+      "lineWidth": 1.2,
+      "dash": [
+        5,
+        4
+      ],
+      "fill": "rgba(184,162,122,.07)"
+    },
+    "grain": {
+      "type": "feTurbulence fractalNoise .9, 2 octaves, 180px tile",
+      "blend": "overlay",
+      "opacity": 0.22
+    }
+  },
+  "components": [
+    {
+      "name": "Paper Slip",
+      "kind": "card",
+      "refersTo": "info-slip",
+      "description": "돌 위에 얹은 탁본 쪽지. 모든 UI 패널의 공통 재료.",
+      "html": "<section class=\"ds-slip\"><h2>세종</h2><div class=\"ds-meta\">들어오는 링크 12,408 · 이어진 문서 3,120</div><p>조선의 제4대 국왕.</p></section>",
+      "css": ".ds-slip{background:var(--paper);color:var(--ink);border:1px solid var(--ink);outline:1px solid var(--paper-2);outline-offset:-5px;box-shadow:0 18px 40px -12px rgba(0,0,0,.7),0 2px 6px rgba(0,0,0,.35);padding:22px 24px 20px;width:min(420px,100%);font-family:var(--body)}.ds-slip h2{margin:0 0 4px;font:400 26px/1.25 var(--display);color:var(--ink)}.ds-slip .ds-meta{font-size:13px;color:var(--ink-2);letter-spacing:.04em;font-variant-numeric:tabular-nums}.ds-slip p{margin:12px 0 0;font-size:15.5px;line-height:1.7;max-width:62ch}"
+    },
+    {
+      "name": "Search Field",
+      "kind": "input",
+      "refersTo": "search-slip",
+      "description": "슬립 안의 투명 입력칸과 먹색 버튼. 초점은 슬립 전체에 황동 테.",
+      "html": "<form class=\"ds-search\" role=\"search\"><input placeholder=\"문서 제목으로 찾기\" aria-label=\"문서 제목으로 찾기\"><button type=\"submit\" class=\"ds-search-btn\">찾기</button></form>",
+      "css": ".ds-search{background:var(--paper);color:var(--ink);border:1px solid var(--ink);outline:1px solid var(--paper-2);outline-offset:-5px;box-shadow:0 18px 40px -12px rgba(0,0,0,.7),0 2px 6px rgba(0,0,0,.35);display:flex;width:min(340px,100%);padding:4px}.ds-search input{flex:1;min-width:0;border:0;background:transparent;font:16px var(--body);color:var(--ink);padding:9px 10px}.ds-search input::placeholder{color:var(--ink-2)}.ds-search input:focus{outline:none}.ds-search:focus-within{outline:2px solid var(--brass);outline-offset:2px}"
+    },
+    {
+      "name": "Search Button",
+      "kind": "button",
+      "refersTo": "search-button",
+      "description": "먹 바탕 종이색 글자, 송명. 유일한 버튼 형태.",
+      "html": "<button class=\"ds-search-btn\">찾기</button>",
+      "css": ".ds-search-btn{border:0;background:var(--ink);color:var(--paper);font:15px var(--display);padding:9px 14px;cursor:pointer;border-radius:0}.ds-search-btn:hover{background:#2B2E33}.ds-search-btn:focus-visible{outline:2px solid var(--brass);outline-offset:2px}"
+    },
+    {
+      "name": "Suggestion List",
+      "kind": "chip",
+      "refersTo": "suggestion-item",
+      "description": "검색 아래 제목 후보 목록. 호버와 초점은 paper-2 바탕.",
+      "html": "<div class=\"ds-sug\" role=\"listbox\"><button role=\"option\">세종</button><button role=\"option\">세종특별자치시</button><button role=\"option\">세종대왕릉</button></div>",
+      "css": ".ds-sug{background:var(--paper);color:var(--ink);border:1px solid var(--ink);outline:1px solid var(--paper-2);outline-offset:-5px;box-shadow:0 18px 40px -12px rgba(0,0,0,.7),0 2px 6px rgba(0,0,0,.35);width:min(340px,100%);padding:6px 0}.ds-sug button{display:block;width:100%;text-align:left;border:0;background:none;font:15px var(--body);color:var(--ink);padding:7px 14px;cursor:pointer}.ds-sug button:hover,.ds-sug button:focus-visible{background:var(--paper-2);outline:none}"
+    },
+    {
+      "name": "Readout",
+      "kind": "custom",
+      "refersTo": "readout",
+      "description": "돌 위 오른쪽 아래의 실측 판독기.",
+      "html": "<div class=\"ds-readout\"><b>770,097</b><span>문서 · 시야 안 약 214,300</span></div>",
+      "css": ".ds-readout{background:var(--stone);padding:16px;text-align:right;font-variant-numeric:tabular-nums;color:var(--incise-dim);font:13px/1.7 var(--body);letter-spacing:.04em}.ds-readout b{display:block;font:400 30px/1.1 var(--display);color:var(--incise);letter-spacing:.02em}"
+    },
+    {
+      "name": "Vertical Masthead",
+      "kind": "nav",
+      "refersTo": "display",
+      "description": "세로쓰기 표제. 오른쪽에서 왼쪽으로 줄을 놓는다.",
+      "html": "<header class=\"ds-title\"><h1>위키천문도</h1><p>WIKIBRAIN</p></header>",
+      "css": ".ds-title{background:var(--stone);padding:16px;display:flex;flex-direction:row-reverse;justify-content:flex-end;gap:12px;align-items:flex-start}.ds-title>*{writing-mode:vertical-rl;text-orientation:mixed;margin:0}.ds-title h1{font:400 44px/1 var(--display);letter-spacing:.18em;color:var(--incise)}.ds-title p{font:400 13px/1.4 var(--body);letter-spacing:.32em;color:var(--brass)}"
+    }
+  ],
+  "narrative": {
+    "northStar": "새긴 하늘 (The Incised Sky)",
+    "overview": "화면 전체가 한 장의 검은 오석이다. 1395년 천상열차분야지도처럼 별은 빛나는 것이 아니라 돌에 새겨진 것이고, 사람이 보는 것은 그 돌을 종이로 떠낸 탁본이다. 77만 개 점이 화면 가운데를 차지하고, 둘레에는 360 눈금을 새긴 동심원 링이 카메라 방위에 맞춰 돈다. 인터페이스는 돌판 위에 얹은 종이 쪽지(슬립)로만 나타나고, 쪽지가 없는 곳에서는 돌과 새김만 남는다.\n\n밀도는 낮고 조용하다. 색은 돌의 검정, 탁본 종이의 미색, 바랜 황동, 청회색 네 가지로 끝난다. 깊이는 빛 번짐이 아니라 가라앉음으로 표현한다. 먼 점은 돌빛으로 꺼지고, 가까운 점은 또렷한 가장자리를 가진 작은 원으로 남는다. 우주 배경 위 네온 점과 유리 패널이라는 이 분야의 기본 배치는 쓰지 않기로 확정했다.\n\n움직임은 느리다. 하늘은 아주 천천히 저절로 돌고(autoRotate 0.12), 사용자가 손대는 순간 멈춘다. 감속은 길고 부드럽다(damping 0.06). 동작 줄이기 설정이면 자동 회전과 전환이 꺼진다.",
+    "keyCharacteristics": [
+      "돌판 하나, 그 위의 종이 쪽지. 모서리는 모두 직각",
+      "점은 음각처럼 또렷한 원, 빛 번짐 없음, 가산 혼합은 낮은 밝기로만",
+      "황동은 눈금, 선택, 초점에만 쓰는 귀한 색",
+      "표제는 세로쓰기, 숫자는 고정폭 숫자(tabular-nums)",
+      "화면 가장자리 여백 28px로 네 귀퉁이를 고정"
+    ],
+    "rules": [
+      {
+        "name": "The Brass Is Earned Rule",
+        "body": "황동은 새김(눈금)과 상호작용의 흔적(선택, 올가미, 초점)에만 쓴다. 면을 채우는 황동은 올가미 안쪽의 7% 투명 채움이 유일하다.",
+        "section": "colors"
+      },
+      {
+        "name": "The Two Grounds Rule",
+        "body": "문자는 돌 위에서는 incise 계열, 종이 위에서는 ink 계열이다. 돌 위에 먹색을, 종이 위에 미색을 쓰지 않는다.",
+        "section": "colors"
+      },
+      {
+        "name": "The Vertical Masthead Rule",
+        "body": "표제는 writing-mode vertical-rl로 세워 쓰고 오른쪽에서 왼쪽으로 줄을 놓는다(row-reverse, 간격 12px). 가로 표제는 쓰지 않는다.",
+        "section": "typography"
+      },
+      {
+        "name": "The Measured Numbers Rule",
+        "body": "실측 숫자는 모두 tabular-nums와 ko-KR 천 단위 구분으로 표기한다.",
+        "section": "typography"
+      },
+      {
+        "name": "The No Bloom Rule",
+        "body": "점, 선, 글자 어디에도 빛 번짐, 글로우, 블룸 후처리를 쓰지 않는다. 밝기 위계는 크기와 낮은 밝기 차이로만 만든다.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Sink, Don't Fade Rule",
+        "body": "멀어지는 것은 투명해지지 않고 돌빛으로 가라앉는다.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** 새 UI는 Paper Slip 재료(paper 바탕, ink 문자, 이중 테, Slip Rest 그림자, 직각)로 만든다.",
+      "**Do** 점 셰이더의 밝기 상한(약 0.27)과 원판 smoothstep(0.32, 0.5)을 유지하고, 새 점 층도 같은 셰이더를 쓴다.",
+      "**Do** 모든 초점 표시는 2px 황동 outline, offset 2px로 통일한다.",
+      "**Do** 고정 UI는 화면 가장자리 28px 선에 맞춘다.",
+      "**Do** 실측 숫자는 tabular-nums와 천 단위 구분으로 쓴다.",
+      "**Do** 동작 줄이기 설정에서 자동 회전과 전환을 끈다."
+    ],
+    "donts": [
+      "**Don't** 점과 선에 블룸, 글로우, 후광을 넣지 않는다.",
+      "**Don't** 우주 배경 위 네온 점과 유리(반투명 블러) 패널을 쓰지 않는다.",
+      "**Don't** 슬립과 버튼 같은 UI 모서리를 둥글리지 않는다. 원은 하늘과 링, 점의 형태로만 쓴다.",
+      "**Don't** 황동으로 넓은 면을 칠하지 않는다.",
+      "**Don't** 점 밝기를 올려 밀집 구역을 흰 덩어리로 만들지 않는다."
+    ]
+  }
+}

@@ -1,0 +1,3 @@
+{"version":"0.0.1","configurations":[
+ {"name":"local","runtimeExecutable":"./run_local.sh","runtimeArgs":[],"port":8000},
+ {"name":"game","runtimeExecutable":".venv/bin/python","runtimeArgs":["server.py"],"port":8000}]}

@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WikiBrain · 위키천문도</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Song+Myung&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --stone:#0E0F11;--stone-2:#17191C;--incise:#E9E4D8;--incise-dim:rgba(233,228,216,.55);
+  --brass:#B8A27A;--slate:#7E8B95;--paper:#E6E0D2;--paper-2:#D9D2C1;--ink:#1A1C1F;--ink-2:#4A4F55;
+  --display:'Song Myung','Gowun Batang',serif;--body:'Gowun Batang','Apple SD Gothic Neo',serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--stone);color:var(--incise);font:16px/1.6 var(--body)}
+::selection{background:var(--brass);color:var(--ink)}
+/* 오석 질감: 아주 옅은 입자 */
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.22;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .9 0 0 0 0 .9 0 0 0 0 .88 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+#sky{position:fixed;inset:0;cursor:grab}
+#vig{position:fixed;inset:0;pointer-events:none;z-index:1;background:radial-gradient(ellipse at 50% 48%,transparent 52%,rgba(5,5,6,.4) 84%,rgba(3,3,4,.75) 100%)}
+#sky:active{cursor:grabbing}
+#ring{position:fixed;inset:0;pointer-events:none;z-index:2}
+#ring{width:100%;height:100%}
+.tick{stroke:var(--incise-dim);stroke-width:.6}
+.tick.major{stroke:var(--brass);stroke-width:1}
+.ringline{fill:none;stroke:var(--incise-dim);stroke-width:.7}
+
+/* 세로쓰기 표제 */
+#title{position:fixed;top:28px;left:28px;z-index:3;display:flex;flex-direction:row-reverse;gap:12px;align-items:flex-start;user-select:none}
+#title>*{writing-mode:vertical-rl;text-orientation:mixed}
+#title h1{margin:0;font:400 44px/1 var(--display);letter-spacing:.18em;color:var(--incise)}
+#title p{margin:0;font:400 13px/1.4 var(--body);letter-spacing:.32em;color:var(--brass)}
+#title small{display:block;font:400 12px/1 var(--body);letter-spacing:.42em;color:var(--slate)}
+
+/* 탁본 종이 슬립 */
+.slip{background:var(--paper);color:var(--ink);border:1px solid var(--ink);outline:1px solid var(--paper-2);outline-offset:-5px;
+  box-shadow:0 18px 40px -12px rgba(0,0,0,.7),0 2px 6px rgba(0,0,0,.35)}
+#search{position:fixed;top:28px;right:28px;z-index:3;display:flex;width:min(340px,calc(100vw - 140px));padding:4px}
+#search input{flex:1;min-width:0;border:0;background:transparent;font:16px var(--body);color:var(--ink);padding:9px 10px;caret-color:#8C2F23}
+#search input::placeholder{color:var(--ink-2)}
+#search input:focus{outline:none}
+#search:focus-within{outline:2px solid var(--brass);outline-offset:2px}
+#search button{border:0;background:var(--ink);color:var(--paper);font:15px var(--display);padding:0 14px;cursor:pointer}
+#search button:hover{background:#2B2E33}
+#search button:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+#sug{position:fixed;top:78px;right:28px;z-index:3;width:min(340px,calc(100vw - 140px));display:none;padding:6px 0;max-height:46vh;overflow:auto}
+#sug button{display:block;width:100%;text-align:left;border:0;background:none;font:15px var(--body);color:var(--ink);padding:7px 14px;cursor:pointer}
+#sug button:hover,#sug button:focus-visible{background:var(--paper-2);outline:none}
+#sug .none{padding:7px 14px;color:var(--ink-2);font-size:14px}
+
+#info{position:fixed;left:28px;bottom:28px;z-index:3;width:min(420px,calc(100vw - 56px));max-height:46vh;overflow:auto;display:none;padding:22px 24px 20px}
+#info h2{margin:0 0 4px;font:400 26px/1.25 var(--display);color:var(--ink);text-wrap:balance}
+#info .meta{font-size:13px;color:var(--ink-2);letter-spacing:.04em;font-variant-numeric:tabular-nums}
+#info a{color:var(--ink);text-underline-offset:3px}
+#info p{margin:12px 0 0;font-size:15.5px;line-height:1.7;color:var(--ink);max-width:62ch}
+#info .titles{margin:12px 0 0;font-size:15px;line-height:1.75;color:var(--ink)}
+#info .close{position:absolute;top:10px;right:10px;border:0;background:none;cursor:pointer;padding:6px;color:var(--ink-2);line-height:0}
+#info .close:hover{color:var(--ink)}
+#info .close:focus-visible{outline:2px solid var(--brass)}
+#info::-webkit-scrollbar{width:8px}#info::-webkit-scrollbar-thumb{background:var(--paper-2)}
+
+#readout{position:fixed;right:28px;bottom:28px;z-index:3;text-align:right;font-variant-numeric:tabular-nums;color:var(--incise-dim);font-size:13px;line-height:1.7;letter-spacing:.04em;user-select:none}
+#readout b{display:block;font:400 30px/1.1 var(--display);color:var(--incise);letter-spacing:.02em}
+#hint{position:fixed;left:50%;bottom:84px;transform:translateX(-50%);z-index:3;color:var(--slate);font-size:13px;letter-spacing:.06em;white-space:nowrap;transition:opacity .6s}
+.act{border:1px solid var(--ink);background:var(--ink);color:var(--paper);font:15px var(--display);padding:8px 14px;cursor:pointer}
+.act:hover{background:#2B2E33}.act:focus-visible,.tl:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+.act.ghost[aria-pressed=false]{color:var(--ink-2);text-decoration:line-through}
+.act.ghost{background:transparent;color:var(--ink)}.act.ghost:hover{background:var(--paper-2)}.act:disabled{opacity:.5;cursor:default}
+#tools{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:3;display:flex;align-items:center;gap:14px;padding:6px;white-space:nowrap}
+#tools label{font-size:14px;color:var(--ink);display:flex;align-items:center;gap:8px;padding-right:8px;font-variant-numeric:tabular-nums}
+#tools label[hidden]{display:none}
+#tools input[type=range]{accent-color:#8a7650;width:160px}
+#bst{position:fixed;top:84px;right:28px;z-index:3;font-size:13px;letter-spacing:.03em;text-align:right;max-width:340px}
+#bst form{display:flex;gap:6px;justify-content:flex-end;margin-top:6px}#bst input{width:150px;border:1px solid var(--slate);background:var(--stone-2);color:var(--incise);padding:5px 8px;font:13px var(--body)}#bst a,#info a{color:inherit}
+#bst.ok{color:var(--brass)}#bst.off{color:var(--slate)}#bst code{font-size:12px;color:var(--incise)}
+#info .titles{display:flex;flex-wrap:wrap;gap:2px 4px}
+.tl{border:0;background:none;padding:2px 6px;font:14.5px var(--body);color:var(--ink);cursor:pointer;border-bottom:1px solid var(--paper-2)}
+.tl:hover{background:var(--paper-2)}
+.acts{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+#chat{position:fixed;right:28px;top:116px;bottom:84px;width:min(420px,calc(100vw - 56px));z-index:4;display:flex;flex-direction:column;padding:18px 20px}
+#chat[hidden]{display:none}
+#chat header{display:flex;justify-content:space-between;align-items:center}
+#chat h2{margin:0;font:400 22px var(--display);color:var(--ink)}
+#chat .close{border:0;background:none;cursor:pointer;color:var(--ink-2);padding:6px;line-height:0}
+#trainBox{font-size:13.5px;color:var(--ink-2);margin:8px 0 0;line-height:1.6}#trainBox b{color:var(--ink);font-weight:400}
+#log{flex:1;overflow:auto;margin:12px 0;display:flex;flex-direction:column;gap:10px}
+.msg{font-size:15px;line-height:1.7;white-space:pre-wrap;max-width:62ch}
+.msg.user{align-self:flex-end;background:var(--ink);color:var(--paper);padding:8px 12px}
+.msg.bot{color:var(--ink)}.msg.sys{color:var(--ink-2);font-size:14px;border-top:1px solid var(--paper-2);padding-top:8px}
+.src{font-size:12.5px;color:var(--ink-2);letter-spacing:.02em}
+#chatForm{display:flex;gap:6px;border-top:1px solid var(--ink);padding-top:10px}
+#chatForm input{flex:1;min-width:0;border:0;background:transparent;font:15.5px var(--body);color:var(--ink);padding:8px 4px;caret-color:#8C2F23}
+#chatForm input:focus{outline:none}#chatForm:focus-within{box-shadow:0 2px 0 var(--brass)}
+#tip{position:fixed;z-index:4;pointer-events:none;display:none;padding:4px 10px;font:15px var(--body);white-space:nowrap}
+#loading{position:fixed;inset:0;z-index:5;display:grid;place-items:center;background:var(--stone);transition:opacity .9s cubic-bezier(.16,1,.3,1)}
+#loading span{font:400 18px var(--display);letter-spacing:.4em;color:var(--brass)}
+@media (max-width:720px){#title h1{font-size:32px}#hint{display:none}#readout b{font-size:22px}#info{bottom:96px}}
+@media (prefers-reduced-motion:reduce){#loading{transition:none}}
+</style></head><body>
+<div id="sky"></div><div id="vig"></div>
+<svg id="ring" aria-hidden="true"><g id="ringG"></g></svg>
+<header id="title"><h1>위키천문도</h1><p>WIKIBRAIN</p><small>韓國 維基百科 七十七萬</small></header>
+<form id="search" class="slip" role="search"><input id="q" placeholder="문서 제목으로 찾기" autocomplete="off" aria-label="문서 제목으로 찾기"><button type="submit">찾기</button></form>
+<div id="sug" class="slip" role="listbox"></div>
+<section id="info" class="slip" aria-live="polite"></section>
+<div id="readout"><b id="rN">770,097</b><span id="rL">문서 · 시야 안 계산 중</span><span id="satN"></span></div>
+<div id="tools" class="slip"><button id="bSphere" class="act">구 띄우기</button><button id="bDist" class="act ghost" aria-pressed="true">분야 경계</button><label id="radw" hidden>반지름 <input id="rad" type="range" min="6" max="600" value="70"> <span id="radv">70</span></label></div>
+<div id="hint">드래그로 돌리고 · 휠로 다가가고 · 별을 누르고 · 구를 끌어 옮기고 구 위에서 휠로 크기 조절</div>
+<div id="bst" class="off">백엔드 확인 중</div>
+<aside id="chat" class="slip" hidden><header><h2 id="chatTitle">이 구역에 묻기</h2><button id="chatClose" class="close" aria-label="닫기"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 2l10 10M12 2L2 12"/></svg></button></header>
+<div id="trainBox"></div><div id="log"></div><form id="chatForm"><input id="cq" placeholder="구 안 문서에 대해 물어보기" autocomplete="off" aria-label="질문"><button class="act">묻기</button></form></aside>
+<div id="tip" class="slip"></div>
+<div id="loading"><span>별을 새기는 중</span></div>
+<script type="importmap">{"imports":{"three":"/vendor/three/build/three.module.js","three/addons/":"/vendor/three/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt=n=>n.toLocaleString('ko-KR');
+const FLAT=0.35; // 원반 모양 연출용 y축 압축 (축 자체에는 의미 없음)
+const STONE=new THREE.Color('#0E0F11');
+// 음각 점: 빛 번짐 없이 가장자리가 또렷한 원. 멀수록 돌빛으로 가라앉음(셰이더 안개). 링크 적은 점은 멀면 숨김(LOD)
+// 피사계 심도: 초점(=회전 중심까지 거리)에서 멀수록 테두리가 퍼지고 어두워짐. 음각: 밝은 속 + 가는 테두리 홈
+const VS=`attribute float aSize;attribute vec3 aColor;attribute float aK;varying vec3 vC;varying float vF;varying float vCoc;
+uniform float uScale,uLodK,uLodD,uFog,uFocus,uDof,uLift;
+void main(){vec4 mv=modelViewMatrix*vec4(position,1.);float z=-mv.z;float hide=aK<uLodK&&z>uLodD?0.:1.;
+ vCoc=clamp(abs(z-uFocus)/max(uFocus,1.),0.,1.)*uDof;
+ vF=1.-exp(-uFog*uFog*z*z);vC=aColor*hide*(1.+uLift);gl_PointSize=max(aSize*uScale/z*(1.+vCoc*.8+uLift*.5),1.6)*hide;gl_Position=projectionMatrix*mv;}`;
+const FS=`varying vec3 vC;varying float vF;varying float vCoc;
+void main(){float d=length(gl_PointCoord-.5);
+ float core=1.-smoothstep(.16+.16*vCoc,.33+.15*vCoc,d);
+ float rim=smoothstep(.37,.42,d)*(1.-smoothstep(.45,.5,d))*.45*(1.-vCoc);
+ float a=max(core,rim);gl_FragColor=vec4(vC*(1.-vF)*(core+rim*.7)/(1.+vCoc*.7),a);}`;
+const mat=(s,fog=.00042)=>new THREE.ShaderMaterial({vertexShader:VS,fragmentShader:FS,
+  uniforms:{uScale:{value:s},uLodK:{value:-1},uLodD:{value:350},uFog:{value:fog},uFocus:{value:1000},uDof:{value:0},uLift:{value:0}},transparent:true,depthWrite:false,blending:THREE.AdditiveBlending});
+function points(pos,col,size,scale,fog){const g=new THREE.BufferGeometry();
+  g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('aColor',new THREE.BufferAttribute(col,3));
+  g.setAttribute('aSize',new THREE.BufferAttribute(size,1));g.setAttribute('aK',new THREE.BufferAttribute(new Float32Array(pos.length/3).fill(1e9),1));
+  return new THREE.Points(g,mat(scale,fog))}
+
+// 로컬(server.py)과 공개 사이트(정적 파일 + 위키백과 요약)를 같은 화면으로
+const LOCAL=['localhost','127.0.0.1'].includes(location.hostname);
+const [buf,titles]=await Promise.all([fetch(LOCAL?'/data/brain.bin':'data/brain.bin').then(r=>r.arrayBuffer()),fetch(LOCAL?'/data/brain_titles.json':'data/titles.json').then(r=>r.json())]);
+let lmeta=null;const shards=new Map();
+async function nbOf(i){lmeta??=await fetch('data/meta.json').then(r=>r.json());const s=Math.floor(i/lmeta.shard);
+  if(!shards.has(s))shards.set(s,fetch(`data/links/${s}.bin`).then(r=>r.arrayBuffer()).then(b=>new Int32Array(b)));
+  const a=await shards.get(s),row=(i-s*lmeta.shard)*(lmeta.k+1),nb=[];for(let k=1;k<=lmeta.k;k++){const v=a[row+k];if(v>=0)nb.push(v)}return {n:a[row],nb}}
+const getLinks=i=>LOCAL?fetch('/api/links?i='+i).then(r=>r.json()):nbOf(i);
+async function getDoc(i){if(LOCAL)return fetch('/api/doc?i='+i).then(r=>r.json());let intro='';
+  try{const r=await fetch('https://ko.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(titles[i].replace(/ /g,'_')));if(r.ok)intro=(await r.json()).extract||''}catch{}
+  return {title:titles[i],intro,indeg:Math.round(raw[i*4+3])}}
+async function getSub(ids){if(LOCAL)return fetch('/api/sub?ids='+ids.join(',')).then(r=>r.json());const S=new Set(ids),pairs=[];
+  for(const i of ids){const {nb}=await nbOf(i);for(const j of nb)if(S.has(j)&&i<j)pairs.push([i,j])}return {pairs}}
+const raw=new Float32Array(buf),N=raw.length/4,PR=Math.min(devicePixelRatio,2),el=$('sky');
+const renderer=new THREE.WebGLRenderer({powerPreference:'high-performance',antialias:false});
+renderer.setPixelRatio(PR);renderer.setSize(el.clientWidth,el.clientHeight);el.appendChild(renderer.domElement);
+const scene=new THREE.Scene();scene.background=STONE;
+const cam=new THREE.PerspectiveCamera(50,el.clientWidth/el.clientHeight,1,30000);cam.position.set(0,520,1150);
+const ctl=new OrbitControls(cam,renderer.domElement);ctl.enableDamping=true;ctl.dampingFactor=.06;
+const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+ctl.autoRotate=!still;ctl.autoRotateSpeed=.12;
+let flyTo=null;ctl.addEventListener('start',()=>{ctl.autoRotate=false;flyTo=null;fly=null;$('hint').style.opacity=0});
+// 트윈: 지수 감속(ease-out expo). 동작 줄이기 설정이면 바로 끝 상태로
+const tweens=new Set();const expo=t=>t>=1?1:1-Math.pow(2,-10*t);
+function tween(ms,fn,done){if(still){fn(1);done&&done();return}const t0=performance.now();tweens.add(now=>{const t=Math.min(1,(now-t0)/ms);fn(expo(t));if(t>=1){done&&done();return true}})}
+let fly=null;
+function flyCam(p){const d=Math.min(Math.max(cam.position.distanceTo(ctl.target)*.55,160),420),dir=cam.position.clone().sub(ctl.target).normalize();
+  const t0=ctl.target.clone(),c0=cam.position.clone(),c1=p.clone().addScaledVector(dir,d);ctl.autoRotate=false;fly={};const me=fly;
+  tween(1400,e=>{if(fly!==me)return;ctl.target.lerpVectors(t0,p,e);cam.position.lerpVectors(c0,c1,e)})}
+
+// 점 색: 탁본 흰색, 링크 많을수록 밝고 크게. 최대 밝기를 낮게 두어 가산 혼합에서도 흰 덩어리가 되지 않게 함
+const pos=new Float32Array(N*3),col=new Float32Array(N*3),size=new Float32Array(N),kA=new Float32Array(N);
+for(let i=0;i<N;i++){const k=raw[i*4+3];kA[i]=k;pos[i*3]=raw[i*4];pos[i*3+1]=raw[i*4+1]*FLAT;pos[i*3+2]=raw[i*4+2];
+  const h=Math.min(1,Math.log2(k+1)/11),l=.09+.42*h*h+.04*Math.random(); // 밀집 구역에서도 하얗게 뭉치지 않도록 낮게
+  col[i*3]=.91*l;col[i*3+1]=.89*l;col[i*3+2]=.85*l;size[i]=1.4+h*7}
+const stars=points(pos,col,size,230*PR);scene.add(stars);
+stars.geometry.setAttribute('aK',new THREE.BufferAttribute(kA,1));stars.material.uniforms.uLodK.value=5;stars.material.uniforms.uDof.value=.6;
+
+// ── 분야 경계: 위에서 본 밀도(x·z)를 격자로 세고 마칭 스퀘어로 등고선 3단을 그어 먹선처럼 깐다
+const districts=(()=>{const G=180;let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;
+  for(let i=0;i<N;i+=7){const x=pos[i*3],z=pos[i*3+2];if(x<x0)x0=x;if(x>x1)x1=x;if(z<z0)z0=z;if(z>z1)z1=z}
+  const sx=(G-1)/(x1-x0),sz=(G-1)/(z1-z0),D=new Float32Array(G*G),Y=new Float32Array(G*G);
+  for(let i=0;i<N;i++){const gx=Math.round((pos[i*3]-x0)*sx),gz=Math.round((pos[i*3+2]-z0)*sz),c=gz*G+gx;D[c]++;Y[c]+=pos[i*3+1]}
+  for(let c=0;c<G*G;c++)if(D[c])Y[c]/=D[c];
+  for(let pass=0;pass<2;pass++){const B=D.slice();for(let z=1;z<G-1;z++)for(let x=1;x<G-1;x++){let a=0;for(let dz=-1;dz<=1;dz++)for(let dx=-1;dx<=1;dx++)a+=B[(z+dz)*G+x+dx];D[z*G+x]=a/9}}
+  const nz=Array.from(D).filter(v=>v>.5).sort((a,b)=>a-b),lv=[.6,.85,.96].map(q=>nz[Math.floor(nz.length*q)]);
+  const out=[];const X=gx=>x0+gx/sx,Z=gz=>z0+gz/sz;
+  for(const L of lv)for(let z=0;z<G-1;z++)for(let x=0;x<G-1;x++){
+    const a=D[z*G+x],b=D[z*G+x+1],c=D[(z+1)*G+x+1],d=D[(z+1)*G+x];const k=(a>L)|(b>L)<<1|(c>L)<<2|(d>L)<<3;if(!k||k===15)continue;
+    const y=(Y[z*G+x]+Y[(z+1)*G+x+1])/2;const e=[[x+(L-a)/(b-a),z],[x+1,z+(L-b)/(c-b)],[x+(L-d)/(c-d),z+1],[x,z+(L-a)/(d-a)]];
+    const segs={1:[[3,0]],2:[[0,1]],3:[[3,1]],4:[[1,2]],5:[[3,0],[1,2]],6:[[0,2]],7:[[3,2]],8:[[2,3]],9:[[0,2]],10:[[0,1],[2,3]],11:[[1,2]],12:[[1,3]],13:[[0,1]],14:[[0,3]]}[k];
+    for(const [p,q] of segs)out.push(X(e[p][0]),y,Z(e[p][1]),X(e[q][0]),y,Z(e[q][1]))}
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(new Float32Array(out),3));
+  const m=new THREE.LineSegments(g,new THREE.LineBasicMaterial({color:'#A7B1B8',transparent:true,opacity:.5,depthWrite:false}));scene.add(m);return m})();
+const lineGeo=new THREE.BufferGeometry();
+scene.add(new THREE.LineSegments(lineGeo,new THREE.LineBasicMaterial({color:'#E9E4D8',transparent:true,opacity:.22,depthWrite:false})));
+const BRASS=[.72*1.5,.63*1.5,.48*1.5];
+const mark=points(new Float32Array(3),new Float32Array(BRASS),new Float32Array([34]),230*PR,0);mark.visible=false;scene.add(mark);
+const picks=points(new Float32Array(3),new Float32Array(3),new Float32Array(1),230*PR,0);picks.visible=false;scene.add(picks);
+
+// ── 둘레 눈금 링: 360 눈금. 카메라 방위각에 맞춰 돈다
+const SVGNS='http://www.w3.org/2000/svg',ringG=$('ringG');
+function buildRing(){ringG.innerHTML='';const w=innerWidth,h=innerHeight,R=Math.min(w,h)*.44,cx=w/2,cy=h/2;if(R<60)return;
+  ringG.setAttribute('transform',`translate(${cx} ${cy})`);
+  for(const r of [R,R-14,R-44]){const c=document.createElementNS(SVGNS,'circle');c.setAttribute('r',r);c.setAttribute('class','ringline');ringG.appendChild(c)}
+  const rot=document.createElementNS(SVGNS,'g');rot.id='rot';ringG.appendChild(rot);
+  for(let d=0;d<360;d++){const a=d*Math.PI/180,m=d%30===0,l=m?14:d%5===0?9:5,t=document.createElementNS(SVGNS,'line');
+    t.setAttribute('x1',Math.sin(a)*R);t.setAttribute('y1',-Math.cos(a)*R);t.setAttribute('x2',Math.sin(a)*(R-l));t.setAttribute('y2',-Math.cos(a)*(R-l));
+    t.setAttribute('class','tick'+(m?' major':''));rot.appendChild(t)}
+}
+buildRing();
+// ── 판독기: 시야 안 문서 수 (1초마다, 샘플 추정)
+const SAMPLE=Math.min(N,60000),sidx=new Uint32Array(SAMPLE);for(let k=0;k<SAMPLE;k++)sidx[k]=Math.floor(Math.random()*N);
+let selected=0;
+function countInView(){cam.updateMatrixWorld();const m=new THREE.Matrix4().multiplyMatrices(cam.projectionMatrix,cam.matrixWorldInverse).elements;let c=0;
+  for(let k=0;k<SAMPLE;k++){const i=sidx[k],x=pos[i*3],y=pos[i*3+1],z=pos[i*3+2],w=m[3]*x+m[7]*y+m[11]*z+m[15];if(w<=0)continue;
+    const sx=(m[0]*x+m[4]*y+m[8]*z+m[12])/w,sy=(m[1]*x+m[5]*y+m[9]*z+m[13])/w;if(sx>-1&&sx<1&&sy>-1&&sy<1)c++}
+  return Math.round(c/SAMPLE*N)}
+function readout(){$('rN').textContent=fmt(N);$('rL').textContent=`문서 · 시야 안 약 ${fmt(countInView())}`+(selected?` · 고른 별 ${fmt(selected)}`:'')}
+setInterval(readout,1000);
+
+// ── 호버·클릭
+const ray=new THREE.Raycaster(),mouse=new THREE.Vector2();let mx=0,my=0,movedAt=0,pending=false;
+function pick(){ray.params.Points.threshold=Math.max(1,cam.position.distanceTo(ctl.target)/450);ray.setFromCamera(mouse,cam);const h=ray.intersectObject(stars)[0];return h?h.index:-1}
+function setMouse(e){mouse.set(e.clientX/innerWidth*2-1,-e.clientY/innerHeight*2+1);mx=e.clientX;my=e.clientY}
+el.addEventListener('pointermove',e=>{if(e.pointerType!=='mouse')return;setMouse(e);movedAt=performance.now();pending=true;$('tip').style.display='none'});
+el.addEventListener('pointerleave',()=>{pending=false;$('tip').style.display='none'});
+let down;el.addEventListener('pointerdown',e=>down=[e.clientX,e.clientY]);
+el.addEventListener('pointerup',e=>{if(e.shiftKey||!down||Math.hypot(e.clientX-down[0],e.clientY-down[1])>5)return;setMouse(e);const si=pickSat();if(si>=0){showSat(sats[si]);return}const i=pick();if(i>=0)select(i)});
+
+const CLOSE='<button class="close" aria-label="닫기"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 2l10 10M12 2L2 12"/></svg></button>';
+function showInfo(html,onClose){const s=$('info');s.innerHTML=CLOSE+html;s.style.display='block';s.querySelector('.close').onclick=()=>{s.style.display='none';mark.visible=false;lineGeo.deleteAttribute('position');if(onClose)onClose();else{picks.visible=false;selected=0;readout()}}}
+
+async function select(i,keep){
+  const p=new THREE.Vector3().fromArray(pos,i*3);if(!keep){picks.visible=false;selected=1;if(sphere.visible)hideSphere()}
+  mark.geometry.attributes.position.array.set([p.x,p.y,p.z]);mark.geometry.attributes.position.needsUpdate=true;mark.visible=true;
+  flyCam(p);
+  showInfo(`<h2>${esc(titles[i])}</h2><div class="meta">불러오는 중</div>`);
+  try{const [L,d]=await Promise.all([getLinks(i),getDoc(i)]);
+    const seg=new Float32Array(L.nb.length*6);L.nb.forEach((j,k)=>seg.set([p.x,p.y,p.z,pos[j*3],pos[j*3+1],pos[j*3+2]],k*6));
+    lineGeo.setAttribute('position',new THREE.BufferAttribute(seg,3));lineGeo.computeBoundingSphere();
+    showInfo(`<h2>${esc(d.title)}</h2><div class="meta">들어오는 링크 ${fmt(d.indeg)} · 이어진 문서 ${fmt(L.n)}${L.n>L.nb.length?` (큰 문서 ${L.nb.length}개만 선으로)`:''}</div><p>${esc(d.intro||'첫 문단이 없는 문서')}</p>`)}
+  catch{showInfo(`<h2>${esc(titles[i])}</h2><div class="meta">문서 정보를 불러오지 못했어요. 서버가 켜져 있는지 확인해 주세요.</div>`)}
+  readout()}
+
+// ── 검색: 정확히 같은 제목 → 앞부분 일치 → 포함
+const tnorm=s=>s.normalize('NFC').replace(/\s+/g,' ').trim().toLowerCase();
+let lowered=null;
+function find(q){q=tnorm(q);if(!q)return[];lowered??=titles.map(tnorm);const ex=[],pre=[],inc=[];
+  for(let i=0;i<N&&inc.length<40;i++){const t=lowered[i];if(t===q)ex.push(i);else if(t.startsWith(q))pre.push(i);else if(t.includes(q))inc.push(i)}
+  const byK=(a,b)=>kA[b]-kA[a];return [...ex,...pre.sort(byK),...inc.sort(byK)].slice(0,8)}
+function sugShow(list,q){const s=$('sug');if(!q){s.style.display='none';return}
+  s.innerHTML=list.length?list.map(i=>`<button data-i="${i}" role="option">${esc(titles[i])}</button>`).join(''):'<div class="none">맞는 제목이 없어요</div>';
+  s.style.display='block';s.querySelectorAll('button').forEach(b=>b.onclick=()=>{s.style.display='none';$('q').value=b.textContent;select(+b.dataset.i)})}
+let st;$('q').addEventListener('input',e=>{clearTimeout(st);st=setTimeout(()=>sugShow(find(e.target.value),e.target.value.trim()),120)});
+$('search').onsubmit=e=>{e.preventDefault();const r=find($('q').value);$('sug').style.display='none';if(r.length)select(r[0]);else sugShow([], $('q').value.trim())};
+addEventListener('keydown',e=>{if(e.key==='Escape')$('sug').style.display='none'});
+
+// ── 3D 구 선택: 구를 드래그로 옮기고 휠·슬라이더로 크기를 바꾼다. 안에 든 문서 = 중심까지 거리 ≤ 반지름
+const sphere=new THREE.Group();sphere.visible=false;scene.add(sphere);
+const shell=new THREE.Mesh(new THREE.SphereGeometry(1,48,32),new THREE.ShaderMaterial({transparent:true,depthWrite:false,
+  uniforms:{uC:{value:new THREE.Color('#E9E4D8')},uHot:{value:0}},
+  vertexShader:`varying vec3 vN;varying vec3 vV;void main(){vec4 mv=modelViewMatrix*vec4(position,1.);vN=normalize(normalMatrix*normal);vV=normalize(-mv.xyz);gl_Position=projectionMatrix*mv;}`,
+  fragmentShader:`varying vec3 vN;varying vec3 vV;uniform vec3 uC;uniform float uHot;void main(){float r=1.-abs(dot(vN,vV));gl_FragColor=vec4(uC,pow(r,3.)*(.45+.25*uHot)+.025);}`}));
+sphere.add(shell);
+const ringMat=new THREE.LineBasicMaterial({color:'#B8A27A',transparent:true,opacity:.85,depthWrite:false});
+const circle=()=>{const p=[];for(let a=0;a<=96;a++){const t=a/96*Math.PI*2;p.push(new THREE.Vector3(Math.cos(t),0,Math.sin(t)))}return new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(p),ringMat)};
+sphere.add(circle());const mer=circle();mer.rotation.x=Math.PI/2;sphere.add(mer);
+let R=70,inSphere=[],selMs=0;
+const setR=r=>{R=Math.max(6,Math.min(600,r));sphere.scale.setScalar(R);$('rad').value=Math.round(R);$('radv').textContent=Math.round(R)};
+setR(R);
+function sphereSelect(){const c=sphere.position,r2=R*R,t0=performance.now(),out=[];
+  for(let i=0;i<N;i++){const dx=pos[i*3]-c.x,dy=pos[i*3+1]-c.y,dz=pos[i*3+2]-c.z;if(dx*dx+dy*dy+dz*dz<=r2)out.push(i)}
+  out.sort((a,b)=>kA[b]-kA[a]);inSphere=out;selMs=performance.now()-t0;window.lastSphere={n:out.length,ms:selMs};
+  const n=Math.min(out.length,3000),pp=new Float32Array(n*3),pc=new Float32Array(n*3),ps=new Float32Array(n);
+  for(let k=0;k<n;k++){const j=out[k];pp.set([pos[j*3],pos[j*3+1],pos[j*3+2]],k*3);pc.set(BRASS,k*3);ps[k]=k<40?16:7}
+  const g=picks.geometry;g.setAttribute('position',new THREE.BufferAttribute(pp,3));g.setAttribute('aColor',new THREE.BufferAttribute(pc,3));
+  g.setAttribute('aSize',new THREE.BufferAttribute(ps,1));g.setAttribute('aK',new THREE.BufferAttribute(new Float32Array(n).fill(1e9),1));
+  g.computeBoundingSphere();picks.visible=n>0;selected=out.length;readout();showSelection()}
+let selTimer=0,setTimer=0;const selSoon=()=>{clearTimeout(selTimer);selTimer=setTimeout(sphereSelect,90);clearTimeout(setTimer);setTimer=setTimeout(()=>{if(!drag)settle()},450)};
+// 중심에 가까운 순 k개 (RAG 문맥용: 300개를 다 넣으면 첫 토큰이 너무 늦다)
+function nearest(k){const c=sphere.position;return inSphere.slice(0,20000).map(i=>[i,(pos[i*3]-c.x)**2+(pos[i*3+1]-c.y)**2+(pos[i*3+2]-c.z)**2])
+  .sort((a,b)=>a[1]-b[1]).slice(0,k).map(a=>a[0])}
+function showSelection(){
+  if(!inSphere.length){showInfo('<h2>구 안에 문서가 없어요</h2><div class="meta">구를 별이 많은 곳으로 끌거나 반지름을 키워 보세요.</div>',hideSphere);return}
+  showInfo(`<h2>구 안 문서 ${fmt(inSphere.length)}개</h2><div class="meta">반지름 ${Math.round(R)} · 계산 ${Math.round(selMs)}ms · 링크 많은 순</div>
+   <div class="titles">${inSphere.slice(0,40).map(j=>`<button class="tl" data-i="${j}">${esc(titles[j])}</button>`).join('')}</div>
+   <div class="acts"><button id="bAsk" class="act">이 구역에 질문하기</button><button id="bTrain" class="act ghost">이 구역으로 LoRA 학습</button></div>`,hideSphere);
+  $('info').querySelectorAll('.tl').forEach(b=>b.onclick=()=>select(+b.dataset.i,true));
+  $('bAsk').onclick=()=>openChat({kind:'sphere'});$('bTrain').onclick=()=>train({kind:'sphere'})}
+function showSphere(){sphere.position.copy(ctl.target);sphere.visible=true;$('bSphere').textContent='구 치우기';$('radw').hidden=false;mark.visible=false;lineGeo.deleteAttribute('position');sphereSelect();settle()}
+function hideSphere(){sphere.visible=false;con.visible=false;picks.visible=false;inSphere=[];selected=0;$('bSphere').textContent='구 띄우기';$('radw').hidden=true;readout()}
+$('bSphere').onclick=()=>sphere.visible?(hideSphere(),$('info').style.display='none'):showSphere();
+$('bDist').onclick=e=>{districts.visible=!districts.visible;e.target.setAttribute('aria-pressed',districts.visible)};
+$('rad').oninput=e=>{setR(+e.target.value);selSoon()};
+const hitSphere=()=>{ray.setFromCamera(mouse,cam);return sphere.visible?ray.intersectObject(shell)[0]:null};
+let drag=null;const plane=new THREE.Plane(),tmp=new THREE.Vector3();
+el.addEventListener('pointerdown',e=>{setMouse(e);const h=hitSphere();if(!h)return;e.stopPropagation();ctl.enabled=false;
+  plane.setFromNormalAndCoplanarPoint(cam.getWorldDirection(tmp).clone(),sphere.position);ray.ray.intersectPlane(plane,tmp);
+  drag={off:sphere.position.clone().sub(tmp)};down=null;el.setPointerCapture(e.pointerId)},true);
+el.addEventListener('pointermove',e=>{setMouse(e);if(!drag){if(sphere.visible){const h=!!hitSphere();shell.material.uniforms.uHot.value=h?1:0;el.style.cursor=h?'move':''}return}
+  ray.setFromCamera(mouse,cam);if(ray.ray.intersectPlane(plane,tmp)){sphere.position.copy(tmp.add(drag.off));selSoon()}});
+el.addEventListener('pointerup',()=>{if(!drag)return;drag=null;ctl.enabled=true;sphereSelect();settle()});
+// 파문: 구 둘레에서 황동 고리가 퍼지며 사라짐 (카메라를 향함)
+const ripple=circle();ripple.material=ringMat.clone();ripple.visible=false;scene.add(ripple);
+// 성좌선: 구 안 큰 문서들끼리 실제 위키 링크를 가는 선으로, 처음부터 끝까지 그려지듯
+const conMat=new THREE.ShaderMaterial({transparent:true,depthWrite:false,uniforms:{uP:{value:0},uC:{value:new THREE.Color('#E9E4D8')}},
+  vertexShader:`attribute float aT;varying float vT;void main(){vT=aT;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
+  fragmentShader:`varying float vT;uniform float uP;uniform vec3 uC;void main(){if(vT>uP)discard;gl_FragColor=vec4(uC,.5);}`});
+const con=new THREE.LineSegments(new THREE.BufferGeometry(),conMat);scene.add(con);
+let conReq=0;
+async function settle(){if(!sphere.visible)return;
+  ripple.position.copy(sphere.position);ripple.quaternion.copy(cam.quaternion);ripple.rotateX(Math.PI/2);ripple.visible=true;
+  tween(900,e=>{ripple.scale.setScalar(R*(1+.7*e));ripple.material.opacity=.85*(1-e)},()=>ripple.visible=false);
+  tween(800,e=>picks.material.uniforms.uLift.value=.9*(1-e));
+  const ids=inSphere.slice(0,40),me=++conReq;con.visible=false;if(ids.length<2)return;
+  try{const {pairs}=await getSub(ids);if(me!==conReq||!sphere.visible)return;
+    const P=new Float32Array(pairs.length*6),T=new Float32Array(pairs.length*2);
+    pairs.forEach(([a,b],k)=>{P.set([pos[a*3],pos[a*3+1],pos[a*3+2],pos[b*3],pos[b*3+1],pos[b*3+2]],k*6);T[k*2]=0;T[k*2+1]=1});
+    con.geometry.setAttribute('position',new THREE.BufferAttribute(P,3));con.geometry.setAttribute('aT',new THREE.BufferAttribute(T,1));
+    con.geometry.computeBoundingSphere();con.visible=true;tween(1100,e=>conMat.uniforms.uP.value=e)}catch{}}
+el.addEventListener('wheel',e=>{if(!sphere.visible)return;setMouse(e);if(!hitSphere())return;e.preventDefault();e.stopPropagation();setR(R*Math.exp(e.deltaY*.0015));selSoon()},{capture:true,passive:false});
+
+// ── 백엔드(브리지) 연결: 상태, RAG 채팅, LoRA 학습, 위성. 브리지가 꺼져 있으면 화면에 그대로 알린다
+// 로컬 화면은 server.py 프록시(/api/b/)를, 공개 사이트는 방문자 자신의 Mac(127.0.0.1:8001)을 토큰과 함께 직접 부른다
+let token='';try{token=localStorage.getItem('wb-token')||''}catch{}
+const bfetch=(name,opt={})=>LOCAL?fetch('/api/b/'+name,opt):fetch('http://127.0.0.1:8001/api/'+name,{...opt,headers:{...(opt.headers||{}),'X-Bridge-Token':token}});
+let bridge={up:false,training:false};
+const offMsg=()=>LOCAL?'백엔드 꺼짐 · 질문과 학습은 <code>./run_local.sh</code>로 켠 뒤 가능'
+  :'내 Mac 연결 안 됨 · <code>./run_local.sh</code> 실행 후 토큰(<code>data/lora/token</code>)을 넣어 주세요 <form id="tokf"><input id="tok" type="password" autocomplete="off" aria-label="브리지 토큰" placeholder="토큰"><button class="act">연결</button></form>';
+async function pollStatus(){try{const r=await bfetch('status');const s=await r.json();
+    if(!r.ok)throw new Error(s.error||'꺼짐');bridge={up:true,...s};
+    const last=Object.entries(s.clusters||{}).pop();
+    $('bst').innerHTML=`${LOCAL?'백엔드':'내 Mac'} 켜짐 · ${esc(s.baseModel.split('/').pop())}`+(last?` · 학습 ${esc(last[0])}: ${esc(stateKo(last[1]))}`:'');
+    $('bst').className='ok'}
+  catch{const was=bridge.up;bridge={up:false};if(was||!$('tokf')){$('bst').innerHTML=offMsg();$('bst').className='off';
+    const f=$('tokf');if(f)f.onsubmit=e=>{e.preventDefault();token=$('tok').value.trim();try{localStorage.setItem('wb-token',token)}catch{};pollStatus();loadSats()}}}
+  renderTrain()}
+const stateKo=c=>({queued:'대기',stopping_chat:'채팅 서버 내리는 중',augmenting:'3관점 데이터 생성 중',training:'학습 중',done:`완료 · train ${c.train_loss} / valid ${c.val_loss} · ${c.seconds}초`,
+  discarded_overfit:`과적합으로 폐기 (train ${c.train_loss} / valid ${c.val_loss})`,failed:'실패'}[c.state]||c.state);
+setInterval(pollStatus,4000);pollStatus();
+function renderTrain(){const t=$('trainBox');if(!t)return;const c=bridge.clusters&&bridge.clusters[curCluster];
+  t.innerHTML=curCluster?`<b>LoRA ${esc(curCluster)}</b> ${c?esc(stateKo(c)):'요청 보냄'}${bridge.training?'<br>학습 중에는 채팅 서버가 내려가 질문할 수 없어요 (8GB 메모리 보호). RAG 문맥은 바로 쓸 수 있어요.':''}`:''}
+async function post(name,body){const r=await bfetch(name,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const j=await r.json().catch(()=>({error:'응답을 읽지 못함'}));if(!r.ok)throw new Error(j.error||('HTTP '+r.status));return j}
+
+// 채팅 대상: 구 안 구역 또는 위성(뉴스·논문·공시) 하나
+let target={kind:'sphere'};
+// 구: 중심에 가까운 40개 중 링크 많은 k개 (가까우면서 내용이 충분한 문서)
+const targetIdx=k=>target.kind==='sat'?target.sat.neighbors.slice(0,k).map(n=>n.i):nearest(40).sort((a,b)=>kA[b]-kA[a]).slice(0,k);
+const targetPrefix=()=>target.kind==='sat'?`[${KIND_KO[target.sat.kind]}] ${target.sat.title}\n${target.sat.summary}\n\n---\n\n`:'';
+function openChat(t){if(t)target=t;$('chatTitle').textContent=target.kind==='sat'?'이 소식 주변에 묻기':'이 구역에 묻기';$('chat').hidden=false;$('cq').focus();renderTrain()}
+$('chatClose').onclick=()=>$('chat').hidden=true;
+function say(who,text){const d=document.createElement('div');d.className='msg '+who;d.textContent=text;$('log').appendChild(d);$('log').scrollTop=1e9;return d}
+const ready=()=>{if(target.kind==='sphere'&&!inSphere.length){say('sys','먼저 구를 띄워 구역을 골라 주세요.');return false}
+  if(!bridge.up){say('sys',LOCAL?'백엔드가 꺼져 있어요. ./run_local.sh 로 켜 주세요.':'내 Mac 브리지에 연결되지 않았어요. 오른쪽 위에서 토큰을 넣어 주세요.');return false}return true};
+let curCluster=null;
+async function train(t){openChat(t);if(!ready())return;
+  try{const rag=await post('rag',{indices:target.kind==='sat'?targetIdx(8):inSphere.slice(0,8)});
+    const docs=rag.docs.map(d=>({title:d.title.slice(0,300),text:d.text.slice(0,6000)}));
+    if(target.kind==='sat')docs.unshift({title:target.sat.title.slice(0,300),text:target.sat.summary.slice(0,6000)||target.sat.title});
+    const cid=(target.kind==='sat'?'sat-':'sphere-')+Date.now().toString(36);
+    const res=await post('augment',{clusterId:cid,documents:docs});
+    curCluster=cid;say('sys',`RAG 문맥은 바로 준비됐어요 (문서 ${docs.length}개, 조립 ${rag.assemble_ms}ms). LoRA 학습은 뒤에서 큐로 돌아요: ${res.baseModel.split('/').pop()}, 샘플 ${res.sampleCount}개, 8GB에서 몇 분~20분.`);pollStatus()}
+  catch(e){say('sys','학습 요청 실패: '+e.message)}}
+$('chatForm').onsubmit=async e=>{e.preventDefault();const q=$('cq').value.trim();if(!q||!ready())return;
+  if(bridge.training){say('sys','LoRA 학습 중이라 채팅 서버가 내려가 있어요. 학습이 끝나면 다시 질문해 주세요.');return}
+  $('cq').value='';say('user',q);const m=say('bot','가까운 위키 문서를 모으는 중');$('cq').disabled=true;
+  // 후보: 위성이면 최근접 위키 9개, 구면 링크 많은 300개 + 중심 근처 100개. 브리지가 질문과 가까운 4개를 고른다
+  const cand=target.kind==='sat'?target.sat.neighbors.map(n=>n.i):[...inSphere.slice(0,300),...nearest(100)];
+  try{const rag=await post('rag',{indices:cand.slice(0,400),question:q,top:3,chars:1200});
+    const src=document.createElement('div');src.className='src';src.textContent='근거: '+(target.kind==='sat'?target.sat.title+' · ':'')+rag.docs.map(d=>d.title).join(' · ');m.before(src);
+    const t0=performance.now();const tick=setInterval(()=>{m.textContent=`모델이 문서를 읽는 중 · ${((performance.now()-t0)/1000).toFixed(0)}초 (보통 5~15초)`},500);
+    const r=await bfetch('chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q,context:(targetPrefix()+rag.context).slice(0,60000),max_tokens:400})});
+    if(!r.ok){clearInterval(tick);const j=await r.json().catch(()=>({}));throw new Error(j.error||j.detail||('HTTP '+r.status))}
+    const rd=r.body.getReader(),dec=new TextDecoder();let buf='',out='',first=0;
+    for(;;){const {done,value}=await rd.read();if(done)break;buf+=dec.decode(value,{stream:true});let k;
+      while((k=buf.indexOf('\n'))>=0){const line=buf.slice(0,k).trim();buf=buf.slice(k+1);
+        if(!line.startsWith('data:')||line.includes('[DONE]'))continue;
+        try{const c=JSON.parse(line.slice(5)).choices[0].delta?.content||'';if(c){if(!first){first=performance.now()-t0;clearInterval(tick)}out+=c;m.textContent=out}}catch{}}}
+    clearInterval(tick);if(!out)m.textContent='(빈 답변)';const meta=document.createElement('div');meta.className='src';meta.textContent=`첫 글자 ${(first/1000).toFixed(1)}초 · 전체 ${((performance.now()-t0)/1000).toFixed(1)}초`;m.after(meta)}
+  catch(e){m.textContent='실패: '+e.message}
+  finally{$('cq').disabled=false;$('cq').focus();$('log').scrollTop=1e9}};
+
+// ── 위성: 브리지가 10분마다 받아 온 뉴스·논문·공시 소식. 같은 e5 공간의 최근접 위키 문서 근처에 Adam으로 놓고 24시간 반감기로 흐려진다
+const KIND_KO={news:'뉴스',paper:'논문',disclosure:'공시 소식'};
+const KIND_RGB={news:[0,.94,1],paper:[.39,.71,.96],disclosure:[.51,.78,.52]};
+const satLayer=points(new Float32Array(3),new Float32Array(3),new Float32Array(1),230*PR,0);satLayer.visible=false;scene.add(satLayer);
+let engine=null,sats=[],satPos=new Map();
+async function loadSats(){try{const r=await bfetch('satellites');if(!r.ok)return;const d=await r.json();
+    if(!engine){const {SatellitePlacementEngine}=await import('./src/core/physics/SatellitePlacementEngine.js');engine=new SatellitePlacementEngine(d.calib)}
+    const skew=Date.now()/1000-d.now;
+    for(const s of d.satellites){if(satPos.has(s.id))continue;const nb=s.neighbors.map(n=>({sim:n.sim,position:new THREE.Vector3(pos[n.i*3],pos[n.i*3+1],pos[n.i*3+2])}));
+      satPos.set(s.id,engine.place(s.id,nb,nb[0],nb.slice(1),(s.born+skew)*1000).position)}
+    sats=d.satellites;drawSats();$('satN').textContent=sats.length?` · 위성 ${fmt(sats.length)}`:''}catch{}}
+function drawSats(){const now=Date.now(),n=sats.length;if(!n){satLayer.visible=false;return}
+  const pp=new Float32Array(n*3),pc=new Float32Array(n*3),ps=new Float32Array(n).fill(22);
+  sats.forEach((s,k)=>{const p=satPos.get(s.id),a=Math.max(.05,Math.exp(-.693*((now-s.born*1000)/3.6e6)/24))*1.6,c=KIND_RGB[s.kind]||KIND_RGB.news;
+    pp.set([p.x,p.y,p.z],k*3);pc.set([c[0]*a,c[1]*a,c[2]*a],k*3)});
+  const g=satLayer.geometry;g.setAttribute('position',new THREE.BufferAttribute(pp,3));g.setAttribute('aColor',new THREE.BufferAttribute(pc,3));
+  g.setAttribute('aSize',new THREE.BufferAttribute(ps,1));g.setAttribute('aK',new THREE.BufferAttribute(new Float32Array(n).fill(1e9),1));g.computeBoundingSphere();satLayer.visible=true}
+setInterval(loadSats,60000);setInterval(drawSats,30000);loadSats();
+function pickSat(){if(!satLayer.visible)return -1;ray.params.Points.threshold=Math.max(2,cam.position.distanceTo(ctl.target)/220);ray.setFromCamera(mouse,cam);const h=ray.intersectObject(satLayer)[0];return h?h.index:-1}
+function showSat(s){const p=satPos.get(s.id);if(p)flyCam(p);mark.visible=false;
+  const ago=Math.round((Date.now()/1000-s.born)/60);
+  showInfo(`<h2>${esc(s.title)}</h2><div class="meta">${KIND_KO[s.kind]} · ${ago<60?ago+'분':Math.round(ago/60)+'시간'} 전 수집 · <a href="${esc(s.link)}" target="_blank" rel="noopener noreferrer">원문</a></div>${s.summary?`<p>${esc(s.summary)}</p>`:''}
+   <div class="meta" style="margin-top:12px">가장 가까운 위키 문서</div><div class="titles">${s.neighbors.map(n=>`<button class="tl" data-i="${n.i}">${esc(n.title)}</button>`).join('')}</div>
+   <div class="acts"><button id="bSatAsk" class="act">이 소식 주변에 질문하기</button><button id="bSatTrain" class="act ghost">주변으로 LoRA 학습</button></div>`);
+  $('info').querySelectorAll('.tl').forEach(b=>b.onclick=()=>select(+b.dataset.i,true));
+  $('bSatAsk').onclick=()=>openChat({kind:'sat',sat:s});$('bSatTrain').onclick=()=>train({kind:'sat',sat:s})}
+
+addEventListener('resize',()=>{renderer.setSize(innerWidth,innerHeight);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();buildRing()});
+let lastAz=null;
+(function loop(){requestAnimationFrame(loop);
+  const now=performance.now();for(const f of tweens)if(f(now))tweens.delete(f);
+  stars.material.uniforms.uFocus.value=cam.position.distanceTo(ctl.target);
+  if(pending&&performance.now()-movedAt>90){pending=false;const i=pick(),t=$('tip'); // 마우스가 멈췄을 때만 77만 개 판정
+    if(i>=0){t.textContent=titles[i];t.style.left=mx+14+'px';t.style.top=my+14+'px';t.style.display='block'}}
+  ctl.update();const az=ctl.getAzimuthalAngle();if(az!==lastAz){lastAz=az;const rot=$('rot');if(rot)rot.setAttribute('transform',`rotate(${-az*180/Math.PI})`);}
+  renderer.render(scene,cam)})();
+readout();requestAnimationFrame(()=>{$('loading').style.opacity=0;setTimeout(()=>$('loading').remove(),900)});
+</script></body></html>

@@ -1,0 +1,73 @@
+{
+  "title": "WikiBrain 시각 세계 고르기",
+  "question": "주사위가 '활판 조판(교정쇄)'을 골랐어. 그대로 갈지, 대안을 고를지, 다시 굴릴지 정해 줘.",
+  "options": [
+    {
+      "id": "assigned", "kind": "assigned", "label": "활판 교정쇄 (Letterpress galley proof)", "kicker": "THE ROLL",
+      "lineage": "금속활자 조판대와 인쇄소 교정쇄 — 직지 이후 한국 활판 전통",
+      "thesis": "77만 문서를 은하가 아니라 조판대 위에 흩어진 활자로 본다. 올가미는 교정자가 빨간 색연필로 두르는 교정 부호다.",
+      "palette": ["#1E1F22", "#3A3C40", "#EDE6D6", "#D7262E", "#9AA0A6"],
+      "materials": ["납 활자 회색 바탕", "교정쇄 종이 패널", "빨간 교정 색연필", "먹 번짐"],
+      "viewport": "전면을 덮는 납빛 공간에 활자 조각(사각 점) 77만 개. 왼쪽 위 굵은 한글 명조로 WIKIBRAIN 조판 표제, 오른쪽 아래 실측 카운터(보이는 문서 수·선택 수)를 고정폭 숫자로. 선택 문서는 교정쇄 종이 슬립 패널에 조판되어 뜬다.",
+      "risk": "점을 활자처럼 보이게 하는 셰이더가 약하면 그냥 회색 은하로 읽힌다. 77만 점 성능 예산 안에서 사각 스프라이트만 허용.",
+      "raised": [
+        {"from": "challenger-specimen", "raise": "화면 모서리에 실시간 측정값(시야 내 문서 수, 올가미 투영 ms, 선택 수)을 고정폭 판독기로 계속 갱신한다."},
+        {"from": "challenger-charsheet", "raise": "분류 범례 견본을 누르면 그 분류의 별만 밝아지고 나머지는 어두워진다."}
+      ]
+    },
+    {
+      "id": "model-pick", "kind": "pick", "label": "천상열차분야지도 석각 성도", "kicker": "IMPECCABLE’S PICK",
+      "lineage": "1395년 조선 석각 천문도",
+      "thesis": "한국 위키백과를 조선의 돌 위에 새긴 하늘로 본다. 구역(분야)은 성수(星宿)처럼 이름 붙은 영역이 된다.",
+      "palette": ["#0B0C0E", "#1A1C1F", "#E9E4D8", "#B8A27A", "#6E7B85"],
+      "materials": ["검은 오석 탁본", "음각 흰 선", "한자 명문 띠", "동심원 적도·황도"],
+      "viewport": "검은 돌 바탕 위 흰 음각 점들, 바깥을 도는 동심원 눈금 링에 주요 군집 이름이 새겨져 있다. 패널은 탁본 종이.",
+      "risk": "'지식=별자리'는 이 카테고리에서 가장 흔히 도착하는 방향이다. 한국 고유 성도로 차별화하지만 익숙함은 남는다."
+    },
+    {
+      "id": "challenger-specimen", "kind": "challenger", "catalogId": "variable-font-specimen", "label": "가변 글꼴 견본",
+      "verdict": "declined", "lineage": "인터랙티브 타입 스페시먼",
+      "palette": ["#F7F6F2", "#111111", "#FF4B00"], "materials": ["흰 종이", "잉크 블랙"],
+      "case": "3D 문서 지도와 결합이 약하다. 문서는 글리프가 아니라 점이다.",
+      "kept": "규모 대비만으로 위계를 만드는 절제, 살아 있는 수치 판독기."
+    },
+    {
+      "id": "challenger-charsheet", "kind": "challenger", "catalogId": "pop-culture-shelf-devianart-character-sheet", "label": "캐릭터 설정 시트",
+      "verdict": "declined", "lineage": "아마추어 캐릭터 레퍼런스 시트",
+      "palette": ["#FF3EA5", "#2BD9FE", "#111111"], "materials": ["원색 채움", "검은 외곽선"],
+      "case": "포트폴리오 독자가 이 세계와 자신을 동일시하지 않고, 데이터의 신뢰감을 깎는다.",
+      "kept": "견본 하나가 그것이 지배하는 모든 영역을 밝히는 범례 문법."
+    },
+    {
+      "id": "challenger-illuminated", "kind": "challenger", "catalogId": "typography-calligraphy-writing-illuminated-initial-vine", "label": "채색 머리글자",
+      "verdict": "declined", "lineage": "중세 필사본",
+      "palette": ["#C9A227", "#1F4FA0", "#B3261E", "#F3EAD3"], "materials": ["금박", "양피지"],
+      "case": "서양 필사본은 한국어 위키 독자의 문화권과 멀다.",
+      "kept": "본문에서 여백의 장면으로 갔다가 쉽게 돌아오는 경로."
+    },
+    {
+      "id": "challenger-vu", "kind": "challenger", "catalogId": "signals-instruments-vu-meter-bridge", "label": "VU 미터 브리지",
+      "verdict": "declined", "lineage": "녹음 콘솔", "palette": ["#F2E8D0", "#111111", "#C8102E"], "materials": ["유리 뒤 미터면", "호두나무"],
+      "case": "77만 문서의 공간 구조를 전달하지 못한다.", "kept": "빨강은 한계를 넘을 때만 쓰는 규율."
+    },
+    {
+      "id": "challenger-quilt", "kind": "challenger", "catalogId": "textiles-weave-drape-fashion-memory-quilt-atlas", "label": "기억 퀼트 아틀라스",
+      "verdict": "declined", "lineage": "조각보 퀼트", "palette": ["#5B7DB1", "#111111", "#C62828"], "materials": ["낡은 천", "새 바늘땀"],
+      "case": "패치 격자는 연속적인 의미 공간을 쪼갠다.", "kept": "모든 조각에 출처를 꿰매 두는 규율."
+    },
+    {
+      "id": "challenger-automata", "kind": "challenger", "catalogId": "kinetic-sculpture-automata-crank-paper-menagerie", "label": "종이 오토마타",
+      "verdict": "declined", "lineage": "손잡이 종이 기계", "palette": ["#FFFFFF", "#B08D57", "#C1121F"], "materials": ["흰 종이", "크라프트 보드"],
+      "case": "행렬형 서사는 자유 탐색 지도와 맞지 않는다.", "kept": "움직이는 대상 하나에만 강조색을 쓰는 규율."
+    }
+  ],
+  "reroll": {"registers": ["safer", "bolder"]},
+  "canon": true,
+  "canonCard": {
+    "kind": "canon", "label": "카테고리 표준",
+    "thesis": "검은 우주 배경에 네온 점, 사이드바 검색과 채팅 패널 — 지식 그래프 데모들이 늘 하는 모양을 제대로.",
+    "palette": ["#05060A", "#E6E8EF", "#5B8CFF"], "materials": ["딥 스페이스", "유리 패널"],
+    "viewport": "검은 배경 은하, 왼쪽 검색 사이드바, 오른쪽 채팅 드로어.",
+    "risk": "다른 지식 그래프 데모와 구별되지 않는다."
+  }
+}

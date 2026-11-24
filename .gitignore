@@ -1,0 +1,17 @@
+.venv/
+data/
+dump/
+__pycache__/
+*.log
+.DS_Store
+site/data/*
+!site/data/live/
+node_modules/
+web/node_modules/
+web/dist/
+.claude/settings.local.json
+site/.vercel/
+site/vendor/
+share/
+site/api/
+.impeccable/questions/
